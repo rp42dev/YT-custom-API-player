@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Video Player</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        margin: 0;
+      }
+
+      .video-wrapper {
+        max-width: 100%;
+        width: 100%;
+        max-width: 450px;
+        aspect-ratio: 1 / 1;
+        border-radius: 20px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background: transparent;
+        pointer-events: all; /* This blocks clicks on iframe */
+      }
+
+      #soundBtn {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #player-container {
+        width: 450px;
+        aspect-ratio: 1 / 1;
+        border-radius: 20px;
+        overflow: hidden;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      #player-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 20px;
+        display: block;
+      }
+
+      @media (max-width: 450px) {
+        #player-container {
+          width: 100vw;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="display: flex; flex-direction: column; align-items: center">
+      <div class="video-wrapper">
+        <div id="player-container"></div>
+        <div class="video-overlay"></div>
+      </div>
+      <div style="text-align: center; margin-top: 15px">
+        <button id="soundBtn">🔇</button>
+      </div>
+    </div>
+
+    <script>
+      // Load YouTube IFrame API asynchronously
+      var tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      var player;
+
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("player-container", {
+          height: "100%",
+          width: "100%",
+          videoId: "ol24a7df814",
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            mute: 1,
+            enablejsapi: 1,
+            modestbranding: 1,
+            disablekb: 1,
+            rel: 0,
+          },
+          events: {
+            onReady: function (event) {
+              event.target.setVolume(100);
+            },
+            onStateChange: onPlayerStateChange,
+          },
+        });
+      }
+
+      const soundBtn = document.getElementById("soundBtn");
+
+      soundBtn.addEventListener("click", () => {
+        if (!player) return;
+
+        if (player.isMuted()) {
+          player.unMute();
+          soundBtn.textContent = "🔊";
+          soundBtn.style.backgroundColor = "green";
+        } else {
+          player.mute();
+          soundBtn.textContent = "🔇";
+          soundBtn.style.backgroundColor = "red";
+        }
+      });
+
+      function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.ENDED) {
+          player.playVideo(); // Replay on end
+        }
+      }
+    </script>
+  </body>
+</html>
+<!-- End of index.html -->
